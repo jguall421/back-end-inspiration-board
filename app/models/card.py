@@ -1,0 +1,13 @@
+from ..db import db
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import ForeignKey
+from typing import Optional
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .board import Board
+
+class Card(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    card_messsage: Mapped[str]
+    likes: Mapped[int]
+    
