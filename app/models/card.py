@@ -8,6 +8,6 @@ if TYPE_CHECKING:
 
 class Card(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    card_messsage: Mapped[str]
-    likes: Mapped[int]
+    card_message: Mapped[str]
+    likes: Mapped[Optional[int]] = mapped_column(default=0)
     
