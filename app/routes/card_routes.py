@@ -38,4 +38,40 @@ def create_cards():
     }
     return response, 201
 
-#@bp.get("")
+# @bp.get("/<card_id>")
+# def get_one_card(card_id):
+#     card = validate_card(card_id)
+#     card_response = {
+#         "id": card.id,
+#         "card_message": card.card_message,
+#         "likes": card.likes
+#     }
+#     return card_response
+
+def validate_card(card_id):
+    try:
+        card_id = int(card_id)
+    except:
+        response = {f"message: card id {card_id} not valid"} 
+        abort(make_response(response, 400))   
+    query = db.select(Card).where(Card.id == card_id)
+    card = db.session.scalar(query)  
+
+    if not card:
+        response = {f"message: card id {card_id} not found"}
+        abort(make_response(response, 404))
+    return card    
+
+@bp.delete("/<card_id>")
+def delete_card(card_id):
+    card = validate_card(card_id)
+    db.session.delete(card)
+    db.session.commit()
+    return Response(status=204, mimetype="application/json")
+
+
+
+
+
+
+
