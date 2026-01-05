@@ -7,9 +7,6 @@ from .models import card
 from .routes.card_routes import bp as cards_bp
 import os
 
-# Import models, blueprints, and anything else needed to set up the app or database
-
-
 def create_app(config=None):
     app = Flask(__name__)
     CORS(app)

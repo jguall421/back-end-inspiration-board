@@ -3,6 +3,7 @@ from ..db import db
 import os
 import requests
 from ..models.card import Card
+from .routes_utilities import validate_model
 
 bp = Blueprint("cards_bp", __name__, url_prefix="/cards")
 
@@ -13,11 +14,7 @@ def get_all_cards():
     card_response = []
     for card in cards:
         card_response.append(
-            {
-                "id": card.id,
-                "card_message": card.card_message,
-                "likes": card.likes
-            }
+            card.to_dict()
         )
     return card_response    
 
@@ -25,49 +22,40 @@ def get_all_cards():
 @bp.post("")
 def create_cards():
     request_body = request.get_json()
-    card_message = request_body["card_message"]
-    #likes = request_body["likes"]
-    new_card = Card(card_message = card_message)
+    try:
+        new_card = Card.from_dict(request_body)
+    except KeyError as error:
+        response = {"message": f"Invalid request: missing {error.args[0]}"}
+        abort(make_response(response, 400))
+            
     db.session.add(new_card)
     db.session.commit()
-
-    response = {
-        "id": new_card.id,
-        "card_message": new_card.card_message
-       # "likes": new_card.likes
-    }
+    response = new_card.to_dict()
     return response, 201
 
 # @bp.get("/<card_id>")
 # def get_one_card(card_id):
-#     card = validate_card(card_id)
-#     card_response = {
-#         "id": card.id,
-#         "card_message": card.card_message,
-#         "likes": card.likes
-#     }
-#     return card_response
+#     card = validate_model(card_id)
+#     return card.to_dict()
 
-def validate_card(card_id):
-    try:
-        card_id = int(card_id)
-    except:
-        response = {f"message: card id {card_id} not valid"} 
-        abort(make_response(response, 400))   
-    query = db.select(Card).where(Card.id == card_id)
-    card = db.session.scalar(query)  
-
-    if not card:
-        response = {f"message: card id {card_id} not found"}
-        abort(make_response(response, 404))
-    return card    
+  
 
 @bp.delete("/<card_id>")
 def delete_card(card_id):
-    card = validate_card(card_id)
+    card = validate_model(card_id)
     db.session.delete(card)
     db.session.commit()
     return Response(status=204, mimetype="application/json")
+
+
+
+@bp.patch("/<card_id>")
+def add_likes(card_id):
+    card= validate_model(Card, card_id)
+    card.likes += 1
+    db.session.commit()
+    return Response(status=204, mimetype="application/json")
+
 
 
 
