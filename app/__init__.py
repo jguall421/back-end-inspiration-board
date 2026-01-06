@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_cors import CORS
 import os
-from .models import board
+from .models import board, card
 from .db import db, migrate
 from .routes.board_routes import bp as boards_bp
 from .routes.card_routes import bp as cards_bp
@@ -12,7 +12,7 @@ def create_app(config=None):
     CORS(app)
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:postgres@localhost:5432/inspiration_board_api_development'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
 
     if config:
         app.config.update(config)

@@ -3,7 +3,7 @@ from ..db import db
 import os
 import requests
 from ..models.card import Card
-from .routes_utilities import validate_model
+from .route_utilities import validate_model
 
 bp = Blueprint("cards_bp", __name__, url_prefix="/cards")
 
@@ -33,10 +33,10 @@ def create_cards():
     response = new_card.to_dict()
     return response, 201
 
-# @bp.get("/<card_id>")
-# def get_one_card(card_id):
-#     card = validate_model(card_id)
-#     return card.to_dict()
+@bp.get("/<card_id>")
+def get_one_card(card_id):
+    card = validate_model(Card,card_id)
+    return card.to_dict()
 
   
 
