@@ -2,6 +2,7 @@ from flask import Blueprint, make_response, abort, request, Response
 from app.models.board import Board
 from .route_utilities import validate_model
 from ..db import db
+from ..models.card import Card
 
 bp = Blueprint("board_bp", __name__, url_prefix="/boards")
 @bp.post("")
@@ -71,7 +72,19 @@ def delete_board(board_id):
     return Response(status=204, mimetype="application/json")
 
 
+@bp.post("/<board_id>/cards")
+def create_card_for_board(board_id):
+    board = validate_model(Board, board_id)
+    request_body = request.get_json()
+    request_body["board_id"] = board.id
+    new_card = Card.from_dict(request_body)
+    db.session.add(new_card)
+    db.session.commit()
+    return new_card.to_dict(), 201
 
-
-
+@bp.get("/<board_id>/cards")
+def get_all_cards_for_board(board_id):
+    board = validate_model(Board, board_id)
+    response = [card.to_dict() for card in board.cards]
+    return response
 
