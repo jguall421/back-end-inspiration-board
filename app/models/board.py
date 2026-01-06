@@ -2,16 +2,16 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
 from typing import Optional
 from ..db import db
-# from typing import TYPE_CHECKING
-# if TYPE_CHECKING:
-#   from .card import Card
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+  from .card import Card
 
 
 class Board(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str]
     name: Mapped[str]
-    #cards: Mapped[list["Card"]] = relationship(back_populates="board")
+    cards: Mapped[list["Card"]] = relationship(back_populates="board")
  
 
 
