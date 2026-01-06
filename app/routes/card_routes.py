@@ -3,7 +3,7 @@ from ..db import db
 import os
 import requests
 from ..models.card import Card
-from .routes_utilities import validate_model
+from .route_utilities import validate_model
 
 bp = Blueprint("cards_bp", __name__, url_prefix="/cards")
 
