@@ -33,10 +33,10 @@ def create_cards():
     response = new_card.to_dict()
     return response, 201
 
-# @bp.get("/<card_id>")
-# def get_one_card(card_id):
-#     card = validate_model(card_id)
-#     return card.to_dict()
+@bp.get("/<card_id>")
+def get_one_card(card_id):
+    card = validate_model(Card,card_id)
+    return card.to_dict()
 
   
 
