@@ -1,9 +1,14 @@
 from flask import Blueprint, request, Response, abort, make_response
 from ..db import db
 import os
+from google import genai
 import requests
 from ..models.card import Card
 from .route_utilities import validate_model
+from dotenv import load_dotenv
+load_dotenv()
+
+gemini_key = os.getenv("GEMINI_API_KEY")
 
 bp = Blueprint("cards_bp", __name__, url_prefix="/cards")
 
@@ -58,7 +63,18 @@ def add_likes(card_id):
 
 
 
-
+@bp.post("/get_inspired")
+def get_inspired():
+    data = request.get_json()
+    messages = data["messages"]
+    #messages = "an epic fantsy story, two beautiful maidens, a dragon, a poem , write the story in French"
+    prompt = "Write me a story , around 250 words, based on the following key words or requirements, seperated by ',' :" + messages
+    client = genai.Client(api_key = gemini_key)
+    response = client.models.generate_content(
+    model="gemini-2.5-flash", contents=prompt
+    )
+    #print(response.text)
+    return {"text": response.text}
 
 
 
