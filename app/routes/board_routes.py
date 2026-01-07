@@ -1,6 +1,6 @@
 from flask import Blueprint, make_response, abort, request, Response
 from app.models.board import Board
-from .route_utilities import validate_model
+from .route_utilities import validate_model, create_model
 from ..db import db
 from ..models.card import Card
 
@@ -8,17 +8,7 @@ bp = Blueprint("board_bp", __name__, url_prefix="/boards")
 @bp.post("")
 def create_board():
     request_body = request.get_json()
-
-    try:
-        new_board = Board.from_dict(request_body)
-
-    except KeyError as error:
-        response = {"message": f"Invalid request: missing {error.args[0]}"}
-        abort(make_response(response, 400))
-    db.session.add(new_board)
-    db.session.commit()
-
-    return new_board.to_dict(), 201
+    return create_model(Board, request_body)
 
 @bp.get("")
 def get_all_boards():
@@ -51,26 +41,6 @@ def get_one_board(board_id):
     board = validate_model(Board, board_id)
 
     return board.to_dict()
-
-@bp.put("/<board_id>")
-def update_board(board_id):
-    board = validate_model(Board, board_id)
-    request_body = request.get_json()
-
-    board.title = request_body["title"]
-    board.name = request_body["name"]
-    db.session.commit()
-
-    return Response(status=204, mimetype="application/json") # 204 No Content
-
-@bp.delete("/<board_id>")
-def delete_board(board_id):
-    board = validate_model(Board, board_id)
-    db.session.delete(board)
-    db.session.commit()
-
-    return Response(status=204, mimetype="application/json")
-
 
 @bp.post("/<board_id>/cards")
 def create_card_for_board(board_id):
