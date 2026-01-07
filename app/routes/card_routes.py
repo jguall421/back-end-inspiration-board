@@ -47,7 +47,7 @@ def get_one_card(card_id):
 
 @bp.delete("/<card_id>")
 def delete_card(card_id):
-    card = validate_model(card_id)
+    card = validate_model(Card,card_id)
     db.session.delete(card)
     db.session.commit()
     return Response(status=204, mimetype="application/json")
