@@ -11,7 +11,7 @@ class Board(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str]
     name: Mapped[str]
-    cards: Mapped[list["Card"]] = relationship(back_populates="board")
+    cards: Mapped[list["Card"]] = relationship(back_populates="board", cascade="all, delete-orphan")
  
 
 
