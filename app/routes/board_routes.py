@@ -35,6 +35,30 @@ def get_all_boards():
         
     return boards_response
 
+@bp.delete("/<board_id>")
+def delete_one_board(board_id):
+    board = validate_model(Board, board_id)
+
+   
+    for card in board.cards:
+        db.session.delete(card)
+
+    db.session.delete(board)
+    db.session.commit()
+
+    return Response(status=204)
+
+@bp.delete("")
+def delete_all_boards():
+    boards = db.session.scalars(db.select(Board))
+
+    for board in boards:
+        for card in board.cards:
+            db.session.delete(card)
+        db.session.delete(board)
+
+    db.session.commit()
+    return Response(status=204)
 
 @bp.get("/<board_id>")
 def get_one_board(board_id):
